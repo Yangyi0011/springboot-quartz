@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yangyi.qz.dao.JobAndTriggerMapper">
+
+    <!-- List<JobAndTriggerDTO> getJobAndTriggerDetails(); -->
+    <select id="getJobAndTriggerDetails" resultType="com.yangyi.qz.domain.dto.JobAndTriggerDTO">
+        SELECT
+            QRTZ_JOB_DETAILS.JOB_NAME AS jobName,
+            QRTZ_JOB_DETAILS.JOB_GROUP AS jobGroup,
+            QRTZ_JOB_DETAILS.JOB_CLASS_NAME AS jobClassName,
+            QRTZ_TRIGGERS.TRIGGER_NAME AS triggerName,
+            QRTZ_TRIGGERS.TRIGGER_GROUP AS triggerGroup,
+            QRTZ_CRON_TRIGGERS.CRON_EXPRESSION AS cronExpression,
+            QRTZ_CRON_TRIGGERS.TIME_ZONE_ID AS timeZoneId,
+            QRTZ_TRIGGERS.TRIGGER_STATE AS triggerStart,
+            FROM_UNIXTIME(
+                QRTZ_TRIGGERS.START_TIME / 1000
+            ) AS createTime,
+            FROM_UNIXTIME(
+                QRTZ_TRIGGERS.PREV_FIRE_TIME / 1000
+            ) AS prevFireTime,
+            FROM_UNIXTIME(
+                QRTZ_TRIGGERS.NEXT_FIRE_TIME / 1000
+            ) AS nextFireTime
+        FROM
+            QRTZ_JOB_DETAILS
+        JOIN QRTZ_TRIGGERS
+        JOIN QRTZ_CRON_TRIGGERS ON QRTZ_JOB_DETAILS.JOB_NAME = QRTZ_TRIGGERS.JOB_NAME
+        AND QRTZ_TRIGGERS.TRIGGER_NAME = QRTZ_CRON_TRIGGERS.TRIGGER_NAME
+        AND QRTZ_TRIGGERS.TRIGGER_GROUP = QRTZ_CRON_TRIGGERS.TRIGGER_GROUP
+    </select>
+
+</mapper>
